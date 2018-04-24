@@ -41,7 +41,7 @@ function train(X::Array{Float64,2}, Y::Array{Float64,1})
         global params.means = norm_params[1]
         global params.sdevs = norm_params[2]
         thetas = zeros(size(Xcopy,2))
-        global params.thetas = GradientDescent.gradient_descent!(Xcopy, Y, h, J,
+        global params.thetas = GradientDescent.gradient_descent(Xcopy, Y, h, J,
             a = gdconf.alpha,
             u = gdconf.epsilon,
             max_iterations = gdconf.max_its)[1]
@@ -67,6 +67,7 @@ function normal_equation(X::Array{Float64,2}, Y::Array{Float64,1})
 end
 
 # Cost function
+# ∑((h - Y)^2) / 2m
 # Input:
 #   X -> Matrix of input data set
 #   Y -> Vector of output of training set
