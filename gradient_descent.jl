@@ -42,6 +42,29 @@ function gradient_descent(X::Array{Float64, 2}, Y::Array{Float64,1}, h::Function
     return T
 end
 
+# Vectorized implementation
+# θ := θ − α/m X'(g(Xθ) − Y)
+function gradient_descentV(X::Array{Float64, 2}, Y::Array{Float64,1}, h::Function, Cost::Function; a::Float64 = 0.003, u::Float64 = 0.0001, max_iterations::Int64 = 50000, doplot = true)
+    m = size(X, 1) # Number of input entries
+    n = size(X, 2) # Number of input features
+    T = zeros(n)
+    temp = Array{Float64}(zeros(n)) # Temp vector of new parameters to evaluate
+    J = 0 # Current iteration's cost function and Last iteration's cost function
+    for it = 1:max_iterations
+        T = T - (a/m) * X' * (h(X,T) - Y)
+        J = Cost(X, Y, T)
+        J_Overtime = reshape([JOvertime; J], length(JOvertime) + 1, 1)
+        println(it, ": ", J)
+        if abs(J_Overtime[end] - J) < u
+            break
+        end
+    end
+    if doplot
+        plot_cost_ot()
+    end
+    return T
+end
+
 function plot_cost_ot()
     display(plot(J_Overtime, linewidth = 3, title = "Cost Overtime", xlabel = "Iteration", ylabel = "Cost"))
 end
