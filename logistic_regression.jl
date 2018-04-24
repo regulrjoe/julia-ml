@@ -6,7 +6,26 @@ include("helpers.jl")
 
 export train, run
 
+# Gradient Descent Configuration
+mutable struct GDConfig
+    alpha::Float64
+    epsilon::Float64
+    max_its::Int64
+end
+# Output Logisitc Regression Parameters
+mutable struct Parameters
+    thetas::Array{Float64,1}
+    means::Array{Float64,1} # means for normalization
+    sdevs::Array{Float64,1} # standard deviations for normalization
+end
+
+gdconf = GDConfig(0.01, 0.0001, 5000)
+params = Parameters([], [], [])
+
 function train(X::Array{Float64,2}, Y::Array{Float64,1})
+end
+
+function run(X::Array{Float64})
 end
 
 # Cost function
