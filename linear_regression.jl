@@ -4,7 +4,7 @@ include("feature_scaling.jl")
 include("gradient_descent.jl")
 include("helpers.jl")
 
-export train
+export train, run
 
 # Gradient Descent Configuration
 mutable struct GDConfig
