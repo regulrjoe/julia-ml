@@ -2,71 +2,52 @@ module GradientDescent
 
 using Plots; gr()
 
-# Overtime change in cost
-J_Overtime = Array{Float64}(0)
+# Gradient Descent Configuration
+mutable struct GDConfig{F<:Float64, I<:Int64}
+    alpha::F
+    epsilon::F
+    max_its::I
+end
 
-# Batch Gradient Descent function for Linear Regression
+# Batch Gradient Descent function with Vectorized implementation
+# θ := θ − α/m X'(h(Xθ) − Y)
 # Input:
 #   X -> Matrix of input data set
 #   Y -> Vector of output of training set
-#   T -> Vector of parameters theta
+#   h -> Hypothesis function
+#   J -> Cost function
 #   a -> Step size alpha
 #   u -> Minimum difference between iterations, epsilon
 #   max_iterations -> Maximum steps before ending iteration
 # Output:
 #   T -> Vector of optimized parameters theta
-#   JOvertime -> Vector of Overtime changes of J(θ)
-function gradient_descent(X::Array{Float64, 2}, Y::Array{Float64,1}, h::Function, Cost::Function; a::Float64 = 0.003, u::Float64 = 0.0001, max_iterations::Int64 = 50000, doplot = true)
+function gradient_descent(X::Array{Float64, 2}, Y::Array{Float64,1}, h::Function, Cost::Function;
+                            config::GDConfig = GDConfig(0.01, 0.0001, 5000), doplot = true)
     m = size(X, 1) # Number of input entries
     n = size(X, 2) # Number of input features
     T = zeros(n)
     temp = Array{Float64}(zeros(n)) # Temp vector of new parameters to evaluate
-    J = 0 # Current iteration's cost function and Last iteration's cost function
-    for it = 1:max_iterations
-        for i = 1:n
-            temp[i] = T[i] - a * 1/m * sum((h(X, T) - Y) .* X[:,i])
-        end
-        for i = 1:n
-            T[i] = temp[i]
-        end
-        J = Cost(X, Y, T)
-        J_Overtime = reshape([JOvertime; J], length(JOvertime) + 1, 1)
-        println(it, ": ", J)
-        if abs(J_Overtime[end] - J) < u
-            break
+    jval = 0 # Current iteration's cost function and Last iteration's cost function
+    jvals = Array{Float64}(0) # Overtime change in cost
+    for it = 1:config.max_its
+        T = T - (config.alpha / m) * X' * (h(X, T) - Y)
+        jval = Cost(X, Y, T)
+        append!(jvals, jval)
+        println(it, ": ", jval)
+        if it > 1
+            if abs(jvals[length(jvals) - 1] - jval) < config.epsilon
+                break
+            end
         end
     end
     if doplot
-        plot_cost_ot()
+        plot_cost_ot(jvals)
     end
     return T
 end
 
-# Vectorized implementation
-# θ := θ − α/m X'(g(Xθ) − Y)
-function gradient_descentV(X::Array{Float64, 2}, Y::Array{Float64,1}, h::Function, Cost::Function; a::Float64 = 0.003, u::Float64 = 0.0001, max_iterations::Int64 = 50000, doplot = true)
-    m = size(X, 1) # Number of input entries
-    n = size(X, 2) # Number of input features
-    T = zeros(n)
-    temp = Array{Float64}(zeros(n)) # Temp vector of new parameters to evaluate
-    J = 0 # Current iteration's cost function and Last iteration's cost function
-    for it = 1:max_iterations
-        T = T - (a/m) * X' * (h(X,T) - Y)
-        J = Cost(X, Y, T)
-        J_Overtime = reshape([JOvertime; J], length(JOvertime) + 1, 1)
-        println(it, ": ", J)
-        if abs(J_Overtime[end] - J) < u
-            break
-        end
-    end
-    if doplot
-        plot_cost_ot()
-    end
-    return T
-end
-
-function plot_cost_ot()
-    display(plot(J_Overtime, linewidth = 3, title = "Cost Overtime", xlabel = "Iteration", ylabel = "Cost"))
+function plot_cost_ot(j_vals::Array{Float64, 1})
+    display(plot(j_vals, linewidth = 3, title = "Cost Overtime", xlabel = "Iteration", ylabel = "Cost"))
 end
 
 function plot_cost(X::Array, Y::Array; min_theta::Number = -10, max_theta::Number = 10, h::Function = Hypothesis.linr)
