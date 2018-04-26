@@ -3,7 +3,7 @@ push!(LOAD_PATH, pwd())
 include("linear_regression.jl")
 include("helpers.jl")
 
-using CSV, DataFrames
+using CSV, DataFrames, StatPlots
 
 # Data reading
 data = CSV.read("machine-learning-ex1/ex1/ex1data2.txt", datarow = 1)
@@ -17,7 +17,10 @@ X = Helpers.check_ones_col(X)
 lr = LinearRegression
 
 # Linear regression
-lr.train(X, Y)
+@time output = lr.train(X, Y)
 
-# Results from LR thetas
-Y2 = lr.run(X)
+if size(output, 1) == 1
+    Y2 = lr.run(X, output[1])
+elseif size(output, 1) == 2
+    Y2 = lr.run(X, output[1], output[2])
+end
