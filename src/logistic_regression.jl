@@ -63,10 +63,16 @@ end
 #   X -> Matrix of input data set
 #   Y -> Vector of output of training set
 #   T -> Vector of parameters to evaluate
-#   h -> Hypothesis function to evaluate
-function J(X::Array{Float64,2}, Y::Array{Float64,1}, T::Array{Float64,1})
-    m = size(X,1)
-    1/m * (-Y' * log.(h(X,T)) - (1 - Y)' * log.(1 - h(X,T)))
+#   G -> Gradients vector to edit
+#   reg -> Regularization parameter
+function J!(X::Array{Float64,2}, Y::Array{Float64,1}, T::Array{Float64,1}; G = [], reg::Number = 0)
+    cost = 1/size(X, 1) * (-Y' * log.(h(X, T)) - (1 - Y)' * log.(1 - h(X, T)))
+    if !isempty(G)
+        for i = 1:length(G)
+            G[i] = 1/size(X,1) * sum((h(X, T) - Y) .* X[:,i])
+        end
+    end
+    return cost
 end
 
 # Logistic regression hypothesis function
