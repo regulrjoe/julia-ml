@@ -129,7 +129,7 @@ function test_featurescaling()
         @test params.mu ≈ [2.0] atol = 0.0001
         @test params.sd ≈ [1.0] atol = 0.0001
 
-        X = [matrixdepot("magic", Float64, 3)]
+        X = matrixdepot("magic", Float64, 3)
         params = fs.fnormalize!(X)
         @test X ≈ [1.13389 -1.00000 0.37796;
             -0.75593 0.00000 0.75593;
