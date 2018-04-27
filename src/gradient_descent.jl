@@ -37,7 +37,7 @@ function gradient_descent(X::Array{Float64, 2}, Y::Array{Float64,1}, h::Function
         else
             T = T - (config.alpha / m) * X' * (h(X, T) - Y)
         end
-        jval = Cost(X, Y, T)
+        jval = Cost(X, Y, T, reg = config.reg)
         append!(jvals, jval)
         if it > 1
             if abs(jvals[length(jvals) - 1] - jval) < config.epsilon
