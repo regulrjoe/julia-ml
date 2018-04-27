@@ -30,6 +30,7 @@ function gradient_descent(X::Array{Float64, 2}, Y::Array{Float64,1}, h::Function
     temp = Array{Float64}(zeros(n)) # Temp vector of new parameters to evaluate
     jval = 0 # Current iteration's cost function and Last iteration's cost function
     jvals = Array{Float64}(0) # Overtime change in cost
+    it = 1
     for it = 1:config.max_its
         if config.reg != 0
             T = T - (1 - config.alpha * (config.reg / m)) - (config.alpha / m) * X' * (h(X, T) - Y)
@@ -47,6 +48,8 @@ function gradient_descent(X::Array{Float64, 2}, Y::Array{Float64,1}, h::Function
     if plot_cost
         plot_cost_ot(jvals)
     end
+    println("Final Cost: ", jval)
+    println("Iterations: ", it)
     return T
 end
 
