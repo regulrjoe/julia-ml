@@ -52,17 +52,25 @@ function test_logisticreg()
     lr = LogisticRegression
     @testset "Logistic Regression Tests" begin
         @testset "Cost Function Unit Tests" begin
-            @test lr.J(
-                [ones(3,1) matrixdepot("magic", Float64, 3)],
-                [1.0; 0.0; 1.0],
-                [-2.0; -1.0; 1.0; 2.0]
-            ) ≈ 4.6832 atol = 0.0001
-            @test lr.J(
+            G = [0.0; 0.0; 0.0; 0.0]
+            output = lr.J!(
                 [ones(3,1) matrixdepot("magic", Float64, 3)],
                 [1.0; 0.0; 1.0],
                 [-2.0; -1.0; 1.0; 2.0],
-                4
-            ) ≈ 8.6832 atol = 0.0001
+                G = G
+            )
+            @test output ≈ 4.6832 atol = 0.0001
+            @test G ≈ [0.31722; 0.87232; 1.64812; 2.23787] atol = 0.0001
+
+            output = lr.J!(
+                [ones(3,1) matrixdepot("magic", Float64, 3)],
+                [1.0; 0.0; 1.0],
+                [-2.0; -1.0; 1.0; 2.0],
+                G = G,
+                reg = 4
+            )
+            @test output ≈ 8.6832 atol = 0.0001
+            @test G ≈ [0.31722; -0.46102; 2.98146; 4.90454] atol = 0.0001
         end
         @testset "Sigmoid Function Unit Tests" begin
             @test lr.g(0.0) == 0.5
