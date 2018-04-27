@@ -22,5 +22,9 @@ lr = LinearRegression
 if size(output, 1) == 1
     Y2 = lr.predict(X, output[1])
 elseif size(output, 1) == 2
-    Y2 = lr.predict(X, output[1], output[2])
+    Y2 = lr.predict(
+        X,
+        output[1],
+        output[2]
+    )
 end

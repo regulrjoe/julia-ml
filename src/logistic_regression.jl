@@ -20,7 +20,17 @@ mutable struct Parameters
     sdevs::Array{Float64,1} # standard deviations for normalization
 end
 
-function train(X::Array{Float64,2}, Y::Array{Float64,1})
+function train(X::Array{Float64,2}, Y::Array{Float64,1};
+        alpha::Float64 = 0.01, epsilon::Float64 = 0.0001,
+        regularization::Float64 = 0.0, max_its::Int64 = 5000,
+        plot_cost = true)
+    X = Helpers.check_ones_col(X)
+    Xcopy = copy(X)
+    norm_params = FeatureScaling.fnormalize!(Xcopy)
+    thetas = GradientDescent.gradient_descent(Xcopy, Y, h, J!,
+        config = GradientDescent.GDConfig(alpha, epsilon, regularization, max_its),
+        plot_cost = plot_cost)
+    (thetas, norm_params)
 end
 
 # Run theta parameters on new entry without normalization
