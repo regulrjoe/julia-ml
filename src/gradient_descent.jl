@@ -23,7 +23,7 @@ end
 # Output:
 #   T -> Vector of optimized parameters theta
 function gradient_descent(X::Array{Float64, 2}, Y::Array{Float64,1}, h::Function, Cost::Function;
-                            config::GDConfig = GDConfig(0.01, 0.0001, 0.0, 5000), doplot = true)
+                            config::GDConfig = GDConfig(0.01, 0.0001, 0.0, 5000), plot_cost = true)
     m = size(X, 1) # Number of input entries
     n = size(X, 2) # Number of input features
     T = zeros(n)
@@ -44,7 +44,7 @@ function gradient_descent(X::Array{Float64, 2}, Y::Array{Float64,1}, h::Function
             end
         end
     end
-    if doplot
+    if plot_cost
         plot_cost_ot(jvals)
     end
     return T
