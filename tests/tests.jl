@@ -83,7 +83,10 @@ function test_logisticreg()
             @test sum(lr.g(reshape(-1:0.1:0.9, 4, 5))) ≈ 9.76894 atol = 0.0001
         end
         @testset "Prediction Function Unit Tests" begin
-            @test lr.predict([1.0 1.0; 1.0 2.5; 1.0 3.0; 1.0 4.0], [-3.5 ; 1.3]) ≈ [0.0; 0.0; 1.0; 1.0] atol = 0.0001
+            @test round.(lr.predict(
+                [1.0 1.0; 1.0 2.5; 1.0 3.0; 1.0 4.0],
+                [-3.5 ; 1.3]
+            )) ≈ [0.0; 0.0; 1.0; 1.0] atol = 0.0001
         end
     end
     return nothing
@@ -92,21 +95,26 @@ end
 # Test functions in gradient_descent.jl
 function test_gradientdescent()
     gd = GradientDescent
-    @testset "Gradient Descent Unit Tests" begin
-        @test gd.gradient_descent(
-            [1.0 5.0; 1.0 2.0; 1.0 4.0; 1.0 5.0],
-            [1.0; 6.0; 4.0; 2.0],
-            LinearRegression.h,
-            LinearRegression.J,
-            config = gd.GDConfig(0.01, 0.0001, 0.0, 1000)
-        ) ≈ [5.2147; -0.573346] atol = 0.0001
-        @test gd.gradient_descent(
-            [2.0 1.0 3.0; 7.0 1.0 9.0; 1.0 8.0 1.0; 3.0 7.0 4.0],
-            [2.0; 5.0; 5.0; 6.0],
-            LinearRegression.h,
-            LinearRegression.J,
-            config = gd.GDConfig(0.01, 0.0001, 0.0, 10)
-        ) ≈ [0.25175; 0.53779; 0.32282] atol = 0.0001
+    @testset "Gradient Descent Tests" begin
+        @testset "Linear Regression Unit Tests" begin
+            @test gd.gradient_descent(
+                [1.0 5.0; 1.0 2.0; 1.0 4.0; 1.0 5.0],
+                [1.0; 6.0; 4.0; 2.0],
+                LinearRegression.h,
+                LinearRegression.J,
+                config = gd.GDConfig(0.01, 0.0001, 0.0, 1000)
+            ) ≈ [5.2147; -0.573346] atol = 0.0001
+            @test gd.gradient_descent(
+                [2.0 1.0 3.0; 7.0 1.0 9.0; 1.0 8.0 1.0; 3.0 7.0 4.0],
+                [2.0; 5.0; 5.0; 6.0],
+                LinearRegression.h,
+                LinearRegression.J,
+                config = gd.GDConfig(0.01, 0.0001, 0.0, 10)
+            ) ≈ [0.25175; 0.53779; 0.32282] atol = 0.0001
+        end
+        @testset "Logistic Regression Unit Tests" begin
+
+        end
     end
     return nothing
 end
