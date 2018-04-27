@@ -17,8 +17,9 @@ export train, predict
 # Output:
 #   optimum paramaters theta
 function train(X::Array{Float64,2}, Y::Array{Float64,1};
-                alpha::Float64 = 0.01, epsilon::Float64 = 0.0001,
-                regularization::Float64 = 0.0, max_its::Int64 = 5000)
+        alpha::Float64 = 0.01, epsilon::Float64 = 0.0001,
+        regularization::Float64 = 0.0, max_its::Int64 = 5000,
+        plot_cost = true)
     X = Helpers.check_ones_col(X)
     if size(X, 2) < 10^4
         thetas = regularization != 0 ?
@@ -29,7 +30,8 @@ function train(X::Array{Float64,2}, Y::Array{Float64,1};
         Xcopy = copy(X)
         norm_params = FeatureScaling.fnormalize!(Xcopy)
         thetas = GradientDescent.gradient_descent(Xcopy, Y, h, J,
-                config = GradientDescent.GDConfig(alpha, epsilon, regularization, max_its))
+            config = GradientDescent.GDConfig(alpha, epsilon, regularization, max_its),
+            plot_cost = plot_cost)
         return (thetas, norm_params)
     end
 end
@@ -69,10 +71,10 @@ function normal_equation(X::Array{Float64,2}, Y::Array{Float64,1})
 end
 
 # Normal Equation with regularization
-function normal_equation(X::Array{Float64,2}, Y::Array{Float64,1}, R::Float64)
+function normal_equation(X::Array{Float64,2}, Y::Array{Float64,1}, reg::Float64)
     n = size(X,2)
     L = eye(n); L[1,1] = 0
-    inv(X' * X + R * L) * X' * Y
+    inv(X' * X + reg * L) * X' * Y
 end
 # Cost function
 # ∑((h - Y)^2) / 2m
@@ -82,7 +84,7 @@ end
 #   T -> Vector of parameters to evaluate
 #   reg -> Regularization parameters
 function J(X::Array{Float64,2}, Y::Array{Float64,1}, T::Array{Float64,1}; reg::Number = 0)
-    sqrd_error = (sum((h(X, T) - Y) .^ 2) + (reg * sum(T[2:end].^2))) / (2 * size(X,1))
+    (sum((h(X, T) - Y) .^ 2) + (reg * sum(T[2:end].^2))) / (2 * size(X,1))
 end
 
 # Linear regression hypothesis function
