@@ -13,7 +13,7 @@ end
 #   X -> Matrix of input data set
 # Output:
 #   params -> Normalization Parameters
-function fnormalize!(X::Array{Float64, 2})
+function fnormalize!(X::Array{Float64})
     m = size(X, 1) # Number of input entries
     n = size(X, 2) # Number of features
     params = Params(zeros(n), zeros(n))

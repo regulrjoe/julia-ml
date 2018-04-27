@@ -4,9 +4,10 @@ using Plots; gr()
 
 # Gradient Descent Configuration
 mutable struct GDConfig{F<:Float64, I<:Int64}
-    alpha::F
-    epsilon::F
-    max_its::I
+    alpha::F # Step size paramater
+    epsilon::F # Minimum error parameter
+    reg::F # Regularization parameter
+    max_its::I # Maximum number of iterations
 end
 
 # Batch Gradient Descent function with Vectorized implementation
@@ -22,7 +23,7 @@ end
 # Output:
 #   T -> Vector of optimized parameters theta
 function gradient_descent(X::Array{Float64, 2}, Y::Array{Float64,1}, h::Function, Cost::Function;
-                            config::GDConfig = GDConfig(0.01, 0.0001, 5000), doplot = true)
+                            config::GDConfig = GDConfig(0.01, 0.0001, 0.0, 5000), doplot = true)
     m = size(X, 1) # Number of input entries
     n = size(X, 2) # Number of input features
     T = zeros(n)
@@ -30,10 +31,13 @@ function gradient_descent(X::Array{Float64, 2}, Y::Array{Float64,1}, h::Function
     jval = 0 # Current iteration's cost function and Last iteration's cost function
     jvals = Array{Float64}(0) # Overtime change in cost
     for it = 1:config.max_its
-        T = T - (config.alpha / m) * X' * (h(X, T) - Y)
+        if config.reg != 0
+            T = T - (1 - config.alpha * (config.reg / m)) - (config.alpha / m) * X' * (h(X, T) - Y)
+        else
+            T = T - (config.alpha / m) * X' * (h(X, T) - Y)
+        end
         jval = Cost(X, Y, T)
         append!(jvals, jval)
-        println(it, ": ", jval)
         if it > 1
             if abs(jvals[length(jvals) - 1] - jval) < config.epsilon
                 break
