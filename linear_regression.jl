@@ -4,26 +4,34 @@ include("feature_scaling.jl")
 include("gradient_descent.jl")
 include("helpers.jl")
 
-export train, run
+export train, predict
 
-# Linear Regression Algorithm with Gradient Descent
+# Linear Regression Algorithm with Normal Equation or Gradient Descent
 # Input:
 #   X -> Matrix of input data set
 #   Y -> Vector of output of training set
+#   alpha -> Step size parameter for gradient descent
+#   epsilon -> Minimum error parameter for gradient descent
+#   regularization -> Regularization parameter for gradient descent
+#   max_its -> Maximum iterations paramter for gradient descent
 # Output:
 #   optimum paramaters theta
 function train(X::Array{Float64,2}, Y::Array{Float64,1};
-                alpha::Float64 = 0.01, epsilon::Float64 = 0.0001, max_its::Int64 = 5000)
-    # X = Helpers.check_ones_col(X)
-    # if size(X, 2) < 10^4
-    #     return Tuple([normal_equation(X, Y)])
-    # else
+                alpha::Float64 = 0.01, epsilon::Float64 = 0.0001,
+                regularization::Float64 = 0.0, max_its::Int64 = 5000)
+    X = Helpers.check_ones_col(X)
+    if size(X, 2) < 10^4
+        thetas = regularization != 0 ?
+            normal_equation(X, Y) :
+            normal_equation(X, Y, regularization)
+        return Tuple([thetas])
+    else
         Xcopy = copy(X)
         norm_params = FeatureScaling.fnormalize!(Xcopy)
         thetas = GradientDescent.gradient_descent(Xcopy, Y, h, J,
-                config = GradientDescent.GDConfig(alpha, epsilon, max_its))
+                config = GradientDescent.GDConfig(alpha, epsilon, regularization, max_its))
         return (thetas, norm_params)
-    # end
+    end
 end
 
 # Run theta parameters on new entry without normalization
@@ -32,7 +40,7 @@ end
 #   T   ->  Theta parameters
 # Output
 #   Hypothesis of X with T
-function run(X::Array{Float64}, T::Array{Float64, 1})
+function predict(X::Array{Float64}, T::Array{Float64, 1})
     X = Helpers.check_ones_col(X)
     h(X, T)
 end
@@ -43,7 +51,7 @@ end
 #   NP  ->  Normalization parameters
 # Output
 #   Hypothesis of X with T
-function run(X::Array{Float64}, T::Array{Float64, 1}, NP::FeatureScaling.Params)
+function predict(X::Array{Float64}, T::Array{Float64, 1}, NP::FeatureScaling.Params)
     X = Helpers.check_ones_col(X, T)
     Xcopy = copy(X)
     FeatureScaling.fnormalize!(Xcopy, NP)
@@ -60,6 +68,12 @@ function normal_equation(X::Array{Float64,2}, Y::Array{Float64,1})
     inv(X' * X) * X' * Y
 end
 
+# Normal Equation with regularization
+function normal_equation(X::Array{Float64,2}, Y::Array{Float64,1}, R::Float64)
+    n = size(X,2)
+    L = eye(n); L[1,1] = 0
+    inv(X' * X + R * L) * X' * Y
+end
 # Cost function
 # ∑((h - Y)^2) / 2m
 # Input:
@@ -68,12 +82,7 @@ end
 #   T -> Vector of parameters to evaluate
 #   reg -> Regularization parameters
 function J(X::Array{Float64,2}, Y::Array{Float64,1}, T::Array{Float64,1}; reg::Number = 0)
-    sqrd_error = (sum((h(X, T) - Y) .^ 2) + reg * sum(T.^2)) / (2 * size(X,1))
-end
-
-# Gradiente of cost function
-function g(X::Array{Float64}, Y::Array{Float64,1}, T::Array{Float64,1}, i::Int64)
-    sum((h(X, T) - Y) .* X[:,i])
+    sqrd_error = (sum((h(X, T) - Y) .^ 2) + (reg * sum(T[2:end].^2))) / (2 * size(X,1))
 end
 
 # Linear regression hypothesis function
