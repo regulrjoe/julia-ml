@@ -1,9 +1,9 @@
 module Tests
 
-include("linear_regression.jl")
-include("logistic_regression.jl")
-include("gradient_descent.jl")
-include("feature_scaling.jl")
+include("../src/linear_regression.jl")
+include("../src/logistic_regression.jl")
+include("../src/gradient_descent.jl")
+include("../src/feature_scaling.jl")
 
 using Base.Test, MatrixDepot
 
