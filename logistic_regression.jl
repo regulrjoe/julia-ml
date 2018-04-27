@@ -15,17 +15,15 @@ end
 # Output Logisitc Regression Parameters
 mutable struct Parameters
     thetas::Array{Float64,1}
+    normalization::Bool
     means::Array{Float64,1} # means for normalization
     sdevs::Array{Float64,1} # standard deviations for normalization
 end
 
-gdconf = GDConfig(0.01, 0.0001, 5000)
-params = Parameters([], [], [])
-
 function train(X::Array{Float64,2}, Y::Array{Float64,1})
 end
 
-function run(X::Array{Float64})
+function predict(X::Array{Float64})
 end
 
 # Cost function
@@ -50,18 +48,15 @@ end
 function h(x::Array{Float64,1}, T::Array{Float64,1})
     g(T' * x)
 end
+
 # Applied to matrix
 function h(X::Array{Float64,2}, T::Array{Float64,1})
-    Y = Array{Float64}(size(X,1))
-    for i = 1:size(X,1)
-        Y[i] = g(T' * X[i,:])
-    end
-    return Y
+    Y = g(X * T)
 end
 
 # Sigmoid function for logistic regression
 function g(z)
-    1 / (1 + e^-z)
+    1 ./ (1 + e.^-z)
 end
 
 end
