@@ -1,5 +1,5 @@
 # juliaML
-Machine Learning exercises from Machine Learning MOOC in Coursera.org, written in Julia.
+Machine Learning algorithms as taught in Andrew Ng's Machine Learning MOOC in Coursera.org, written in Julia. `
 
 ## Linear Regression
 #### Features:
