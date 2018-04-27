@@ -4,7 +4,7 @@ include("feature_scaling.jl")
 include("gradient_descent.jl")
 include("helpers.jl")
 
-export train, run
+export train, predict
 
 # Gradient Descent Configuration
 mutable struct GDConfig
@@ -23,7 +23,28 @@ end
 function train(X::Array{Float64,2}, Y::Array{Float64,1})
 end
 
-function predict(X::Array{Float64})
+# Run theta parameters on new entry without normalization
+# Input
+#   X   ->  Input data
+#   T   ->  Theta parameters
+# Output
+#   Hypothesis of X with T
+function predict(X::Array{Float64}, T::Array{Float64, 1})
+    X = Helpers.check_ones_col(X)
+    h(X, T)
+end
+# Run theta parameters on new entry with normalization
+# Input
+#   X   ->  Input data
+#   T   ->  Theta parameters
+#   NP  ->  Normalization parameters
+# Output
+#   Hypothesis of X with T
+function predict(X::Array{Float64}, T::Array{Float64, 1}, NP::FeatureScaling.Params)
+    X = Helpers.check_ones_col(X, T)
+    Xcopy = copy(X)
+    FeatureScaling.fnormalize!(Xcopy, NP)
+    h(Xcopy, T)
 end
 
 # Cost function
