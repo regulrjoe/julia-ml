@@ -14,12 +14,14 @@ export train, predict
 #   epsilon -> Minimum error parameter for gradient descent
 #   regularization -> Regularization parameter for gradient descent
 #   max_its -> Maximum iterations paramter for gradient descent
+#   plot_cost -> Plot overtime change in cost bool.
 # Output:
-#   optimum paramaters theta
+#   Optimum paramaters theta
+#   Normalization parameters
 function train(X::Array{Float64,2}, Y::Array{Float64,1};
         alpha::Float64 = 0.01, epsilon::Float64 = 0.0001,
         regularization::Float64 = 0.0, max_its::Int64 = 5000,
-        plot_cost = true)
+        plot_cost = false)
     X = Helpers.check_ones_col(X)
     if size(X, 2) < 10^4
         thetas = regularization != 0 ?

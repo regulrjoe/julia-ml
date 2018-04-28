@@ -23,7 +23,7 @@ end
 function train(X::Array{Float64,2}, Y::Array{Float64,1};
         alpha::Float64 = 0.01, epsilon::Float64 = 0.0001,
         regularization::Float64 = 0.0, max_its::Int64 = 5000,
-        plot_cost = true)
+        plot_cost = false)
     X = Helpers.check_ones_col(X)
     Xcopy = copy(X)
     norm_params = FeatureScaling.fnormalize!(Xcopy)
