@@ -48,9 +48,7 @@ function gradient_descent(X::Array{Float64, 2}, Y::Array{Float64,1}, h::Function
     if plot_cost
         plot_cost_ot(jvals)
     end
-    println("Final Cost: ", jval)
-    println("Iterations: ", it)
-    return T
+    return (T, [jval, it])
 end
 
 function plot_cost_ot(j_vals::Array{Float64, 1})

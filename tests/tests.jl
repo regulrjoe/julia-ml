@@ -108,17 +108,19 @@ function test_gradientdescent()
                 LinearRegression.h,
                 LinearRegression.J,
                 config = gd.GDConfig(0.01, 0.0001, 0.0, 1000)
-            ) ≈ [5.2147; -0.573346] atol = 0.0001
+            )[1] ≈ [5.2147; -0.573346] atol = 0.0001
             @test gd.gradient_descent(
                 [2.0 1.0 3.0; 7.0 1.0 9.0; 1.0 8.0 1.0; 3.0 7.0 4.0],
                 [2.0; 5.0; 5.0; 6.0],
                 LinearRegression.h,
                 LinearRegression.J,
                 config = gd.GDConfig(0.01, 0.0001, 0.0, 10)
-            ) ≈ [0.25175; 0.53779; 0.32282] atol = 0.0001
+            )[1] ≈ [0.25175; 0.53779; 0.32282] atol = 0.0001
         end
         @testset "Logistic Regression Unit Tests" begin
+            @test_skip gd.gradient_descent(
 
+            )
         end
     end
     return nothing

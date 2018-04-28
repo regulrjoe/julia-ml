@@ -6,20 +6,18 @@ include("helpers.jl")
 
 export train, predict
 
-# Gradient Descent Configuration
-mutable struct GDConfig
-    alpha::Float64
-    epsilon::Float64
-    max_its::Int64
-end
-# Output Logisitc Regression Parameters
-mutable struct Parameters
-    thetas::Array{Float64,1}
-    normalization::Bool
-    means::Array{Float64,1} # means for normalization
-    sdevs::Array{Float64,1} # standard deviations for normalization
-end
-
+# Linear Regression Algorithm with Normal Equation or Gradient Descent
+# Input:
+#   X -> Matrix of input data set
+#   Y -> Vector of output of training set
+#   alpha -> Step size parameter for gradient descent
+#   epsilon -> Minimum error parameter for gradient descent
+#   regularization -> Regularization parameter for gradient descent
+#   max_its -> Maximum iterations paramter for gradient descent
+#   plot_cost -> Plot overtime change in cost bool.
+# Output:
+#   Optimum paramaters theta
+#   Normalization parameters
 function train(X::Array{Float64,2}, Y::Array{Float64,1};
         alpha::Float64 = 0.01, epsilon::Float64 = 0.0001,
         regularization::Float64 = 0.0, max_its::Int64 = 5000,
@@ -27,10 +25,11 @@ function train(X::Array{Float64,2}, Y::Array{Float64,1};
     X = Helpers.check_ones_col(X)
     Xcopy = copy(X)
     norm_params = FeatureScaling.fnormalize!(Xcopy)
-    thetas = GradientDescent.gradient_descent(Xcopy, Y, h, J!,
+    gd_output = GradientDescent.gradient_descent(Xcopy, Y, h, J!,
         config = GradientDescent.GDConfig(alpha, epsilon, regularization, max_its),
         plot_cost = plot_cost)
-    (thetas, norm_params)
+    println("Cost: ", gd_output[2][1], "\nIterations: ", gd_output[2][2])
+    return (gd_output[1], norm_params)
 end
 
 # Run theta parameters on new entry without normalization

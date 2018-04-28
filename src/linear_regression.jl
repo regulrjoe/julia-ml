@@ -31,10 +31,11 @@ function train(X::Array{Float64,2}, Y::Array{Float64,1};
     else
         Xcopy = copy(X)
         norm_params = FeatureScaling.fnormalize!(Xcopy)
-        thetas = GradientDescent.gradient_descent(Xcopy, Y, h, J,
+        gd_output = GradientDescent.gradient_descent(Xcopy, Y, h, J,
             config = GradientDescent.GDConfig(alpha, epsilon, regularization, max_its),
             plot_cost = plot_cost)
-        return (thetas, norm_params)
+        println("Cost: ", gd_output[2][1], "\nIterations: ", gd_output[2][2])
+        return (gd_output[1], norm_params)
     end
 end
 

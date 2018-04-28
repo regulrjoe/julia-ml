@@ -23,6 +23,7 @@ lr = LogisticRegression
 @time output = lr.train(X, Y, alpha = 0.3, max_its = 2000, epsilon = 0.000001)
 
 println("Thetas: ", output[1])
+
 Y2 = lr.predict(
     [1.0; 45.0; 85.0],
     output[1],
