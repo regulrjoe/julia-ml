@@ -85,8 +85,13 @@ function test_logisticreg()
         @testset "Prediction Function Unit Tests" begin
             @test round.(lr.predict(
                 [1.0 1.0; 1.0 2.5; 1.0 3.0; 1.0 4.0],
-                [-3.5 ; 1.3]
+                [-3.5; 1.3]
             )) ≈ [0.0; 0.0; 1.0; 1.0] atol = 0.0001
+            @test lr.predict(
+                [1.0; 45.0; 85.0],
+                [1.62409; 3.81069; 3.54826],
+                Dict("mu" => [1.0; 65.6443; 66.222], "sd" => [0.0; 19.4582; 18.5828])
+            ) ≈  0.7625 atol = 0.0001
         end
     end
     return nothing
@@ -126,16 +131,16 @@ function test_featurescaling()
         X = [1.0; 2.0; 3.0]
         params = fs.fnormalize!(X)
         @test X ≈ [-1.0; 0.0; 1.0] atol = 0.0001
-        @test params.mu ≈ [2.0] atol = 0.0001
-        @test params.sd ≈ [1.0] atol = 0.0001
+        @test params["mu"] ≈ [2.0] atol = 0.0001
+        @test params["sd"] ≈ [1.0] atol = 0.0001
 
         X = matrixdepot("magic", Float64, 3)
         params = fs.fnormalize!(X)
         @test X ≈ [1.13389 -1.00000 0.37796;
             -0.75593 0.00000 0.75593;
             -0.37796 1.00000 -1.13389] atol = 0.0001
-        @test params.mu ≈ [5.0; 5.0; 5.0] atol = 0.0001
-        @test params.sd ≈ [2.6458; 4.0000; 2.6458] atol = 0.0001
+        @test params["mu"] ≈ [5.0; 5.0; 5.0] atol = 0.0001
+        @test params["sd"] ≈ [2.6458; 4.0000; 2.6458] atol = 0.0001
 
         X = [-ones(1,3); matrixdepot("magic", Float64, 3)]
         params = fs.fnormalize!(X)
@@ -143,8 +148,8 @@ function test_featurescaling()
             1.21725 -0.56373 0.67625;
             -0.13525 0.33824 0.94675;
             0.13525 1.24022 -0.40575] atol = 0.0001
-        @test params.mu ≈ [3.5; 3.5; 3.5] atol = 0.0001
-        @test params.sd ≈ [3.6968; 4.4347; 3.6968] atol = 0.0001
+        @test params["mu"] ≈ [3.5; 3.5; 3.5] atol = 0.0001
+        @test params["sd"] ≈ [3.6968; 4.4347; 3.6968] atol = 0.0001
     end
     return nothing
 end

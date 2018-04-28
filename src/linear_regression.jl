@@ -55,7 +55,7 @@ end
 #   NP  ->  Normalization parameters
 # Output
 #   Hypothesis of X with T
-function predict(X::Array{Float64}, T::Array{Float64, 1}, NP::FeatureScaling.Params)
+function predict(X::Array{Float64}, T::Array{Float64, 1}, NP::Dict{String, Array{Float64, 1}})
     X = Helpers.check_ones_col(X, T)
     Xcopy = copy(X)
     FeatureScaling.fnormalize!(Xcopy, NP)
