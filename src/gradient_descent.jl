@@ -6,7 +6,7 @@ using Plots; gr()
 mutable struct GDConfig{F<:Float64, I<:Int64}
     alpha::F # Step size paramater
     epsilon::F # Minimum error parameter
-    reg::F # Regularization parameter
+    lambda::F # Regularization parameter
     max_its::I # Maximum number of iterations
 end
 
@@ -32,12 +32,12 @@ function gradient_descent(X::Array{Float64, 2}, Y::Array{Float64,1}, h::Function
     jvals = Array{Float64}(0) # Overtime change in cost
     it = 1
     for it = 1:config.max_its
-        if config.reg != 0
-            T = T - (1 - config.alpha * (config.reg / m)) - (config.alpha / m) * X' * (h(X, T) - Y)
+        if config.lambda != 0
+            T = T - (1 - config.alpha * (config.lambda / m)) - (config.alpha / m) * X' * (h(X, T) - Y)
         else
             T = T - (config.alpha / m) * X' * (h(X, T) - Y)
         end
-        jval = Cost(X, Y, T, reg = config.reg)
+        jval = Cost(X, Y, T, lambda = config.lambda)
         append!(jvals, jval)
         if it > 1
             if abs(jvals[length(jvals) - 1] - jval) < config.epsilon
@@ -48,7 +48,7 @@ function gradient_descent(X::Array{Float64, 2}, Y::Array{Float64,1}, h::Function
     if plot_cost
         plot_cost_ot(jvals)
     end
-    return (T, [jval, it])
+    return (T, (jval, it))
 end
 
 function plot_cost_ot(j_vals::Array{Float64, 1})

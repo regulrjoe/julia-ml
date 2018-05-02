@@ -20,19 +20,19 @@ export train, predict
 #   Normalization parameters
 function train(X::Array{Float64,2}, Y::Array{Float64,1};
         alpha::Float64 = 0.01, epsilon::Float64 = 0.0001,
-        regularization::Float64 = 0.0, max_its::Int64 = 5000,
+        lambda::Float64 = 0.0, max_its::Int64 = 5000,
         plot_cost = false)
     X = Helpers.check_ones_col(X)
     if size(X, 2) < 10^4
-        thetas = regularization != 0 ?
+        thetas = lambda != 0 ?
             normal_equation(X, Y) :
-            normal_equation(X, Y, regularization)
+            normal_equation(X, Y, lambda)
         return Tuple([thetas])
     else
         Xcopy = copy(X)
         norm_params = FeatureScaling.fnormalize!(Xcopy)
         gd_output = GradientDescent.gradient_descent(Xcopy, Y, h, J,
-            config = GradientDescent.GDConfig(alpha, epsilon, regularization, max_its),
+            config = GradientDescent.GDConfig(alpha, epsilon, lambda, max_its),
             plot_cost = plot_cost)
         println("Cost: ", gd_output[2][1], "\nIterations: ", gd_output[2][2])
         return (gd_output[1], norm_params)
@@ -74,10 +74,10 @@ function normal_equation(X::Array{Float64,2}, Y::Array{Float64,1})
 end
 
 # Normal Equation with regularization
-function normal_equation(X::Array{Float64,2}, Y::Array{Float64,1}, reg::Float64)
+function normal_equation(X::Array{Float64,2}, Y::Array{Float64,1}, lambda::Float64)
     n = size(X,2)
     L = eye(n); L[1,1] = 0
-    inv(X' * X + reg * L) * X' * Y
+    inv(X' * X + lambda * L) * X' * Y
 end
 # Cost function
 # ∑((h - Y)^2) / 2m
@@ -86,8 +86,8 @@ end
 #   Y -> Vector of output of training set
 #   T -> Vector of parameters to evaluate
 #   reg -> Regularization parameters
-function J(X::Array{Float64,2}, Y::Array{Float64,1}, T::Array{Float64,1}; reg::Number = 0)
-    (sum((h(X, T) - Y) .^ 2) + (reg * sum(T[2:end].^2))) / (2 * size(X,1))
+function J(X::Array{Float64,2}, Y::Array{Float64,1}, T::Array{Float64,1}; lambda::Number = 0)
+    (sum((h(X, T) - Y) .^ 2) + (lambda * sum(T[2:end].^2))) / (2 * size(X,1))
 end
 
 # Linear regression hypothesis function

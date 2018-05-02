@@ -20,13 +20,13 @@ export train, predict
 #   Normalization parameters
 function train(X::Array{Float64,2}, Y::Array{Float64,1};
         alpha::Float64 = 0.01, epsilon::Float64 = 0.0001,
-        regularization::Float64 = 0.0, max_its::Int64 = 5000,
+        lambda::Float64 = 0.0, max_its::Int64 = 5000,
         plot_cost = false)
     X = Helpers.check_ones_col(X)
     Xcopy = copy(X)
     norm_params = FeatureScaling.fnormalize!(Xcopy)
     gd_output = GradientDescent.gradient_descent(Xcopy, Y, h, J!,
-        config = GradientDescent.GDConfig(alpha, epsilon, regularization, max_its),
+        config = GradientDescent.GDConfig(alpha, epsilon, lambda, max_its),
         plot_cost = plot_cost)
     println("Cost: ", gd_output[2][1], "\nIterations: ", gd_output[2][2])
     return (gd_output[1], norm_params)
