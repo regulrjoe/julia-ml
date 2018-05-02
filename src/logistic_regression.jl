@@ -63,12 +63,16 @@ end
 #   Y -> Vector of output of training set
 #   T -> Vector of parameters to evaluate
 #   G -> Gradients vector to edit
-#   reg -> Regularization parameter
-function J!(X::Array{Float64,2}, Y::Array{Float64,1}, T::Array{Float64,1}; G = [], reg::Number = 0)
-    cost = 1/size(X, 1) * (-Y' * log.(h(X, T)) - (1 - Y)' * log.(1 - h(X, T)))
+#   lambda -> Regularization parameter
+function J!(X::Array{Float64,2}, Y::Array{Float64,1}, T::Array{Float64,1}; G = [], lambda::Number = 0)
+    m = size(X, 1)
+    cost = 1 / m * (-Y' * log.(h(X, T)) - (1 - Y)' * log.(1 - h(X, T))) + (lambda *  (1/2m * sum(T[2:end].^2)))
     if !isempty(G)
         for i = 1:length(G)
-            G[i] = 1/size(X,1) * sum((h(X, T) - Y) .* X[:,i])
+            G[i] = 1 / m * sum((h(X, T) - Y) .* X[:,i])
+            if i > 1
+                G[i] += lambda / m * T[i]
+            end
         end
     end
     return cost
